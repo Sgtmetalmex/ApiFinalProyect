@@ -28,18 +28,14 @@ pool.on('error', err => {
 
 //#region End Points
 app.get('/api/GetAll', async (req, res) => {
-    let queryManagers = `SELECT * FROM Management`;
-    let queryGroups = `SELECT * FROM Groups`;
-    let queryTeachers = `SELECT * FROM Teachers`;
-    let querySchools = `SELECT * FROM School`;
 
-    let dataManagment = await paul(queryManagers, res);
-    let dataGroups = await paul(queryGroups, res);
-    let dataTeachers = await paul(queryTeachers, res);
-    let dataSchools = await paul(querySchools, res);
+    let dataManagement = await paul("SELECT * FROM Management", res);
+    let dataGroups = await paul("SELECT * FROM Groups", res);
+    let dataTeachers = await paul("SELECT * FROM Teachers", res);
+    let dataSchools = await paul("SELECT * FROM School", res);
 
-    let data ={
-        "management": dataManagment,
+    let data = {
+        "management": dataManagement,
         "groups": dataGroups,
         "teachers": dataTeachers,
         "schools": dataSchools
@@ -56,30 +52,131 @@ app.post('/api/ValidateUsers', async (req, res) => {
     res.json({ "data": data[0] ? "Welcome" : "Incorrect Data" })
 });
 
-app.post('/api/AddManagment', async (req, res)=>{
+app.post('/api/AddManagement', async (req, res) => {
     let body = req.body;
-    let query = `exec AddManagement '${body.name}','${body.adress}','${body.telephone}','${body.email}',
-                 ${body.position},'${body.password}')`;
+    let query = `exec AddManagement '${body.name}','${body.address}','${body.telephone}','${body.email}',${body.position},'${body.password}'`;
 
     let data = await paul(query, res);
+
+    res.json(data.rowsAffected.length)
 });
 
-app.post('/api/AddGroup', async (req, res)=>{
+app.post('/api/AddGroup', async (req, res) => {
     let body = req.body;
     let query = `EXEC AddGroup '${body.name}'`;
-                 
+
     let data = await paul(query, res);
+
+    res.json(data.rowsAffected.length)
+
 });
 
-app.post('/api/AddTeacher', async (req, res)=>{
+app.post('/api/AddTeacher', async (req, res) => {
     let body = req.body;
-    let query = `EXEC AddTeacher '${body.name}','${body.adress}','${body.telephone}','${body.idGroup}'`;
-                 
+    let query = `EXEC AddTeacher '${body.name}','${body.address}','${body.telephone}',${body.groupId}`;
+
     let data = await paul(query, res);
+
+    res.json(data.rowsAffected.length)
+});
+
+app.post('/api/AddSchool', async (req, res) => {
+    let body = req.body;
+    let query = `EXEC AddSchool '${body.name}','${body.registerNumber}','${body.address}','${body.telephone}',${body.zone},'${body.director}'`;
+
+    let data = await paul(query, res);
+
+    res.json(data.rowsAffected.length)
 });
 
 
+app.delete('/api/DeleteManager:id', async (req, res) => {
+    let body = req.params;
+    let id = body.id;
+    if (isNaN(id) || id < 1 || !id)
+        return res.json('invalid Id')
+    let query = `DELETE FROM Management WHERE idManagement = ${id}`;
 
+    let data = await paul(query, res);
+    res.json("Succesfully Deleted ") + data.rowsAffected;
+});
+
+app.delete('/api/DeleteGroup:id', async (req, res) => {
+    let body = req.params;
+    let id = body.id;
+    if (isNaN(id) || id < 1 || !id)
+        return res.json('invalid Id')
+    let query = `DELETE FROM Groups WHERE idGroup = ${id}`;
+
+    let data = await paul(query, res);
+    res.json("Succesfully Deleted ") + data.rowsAffected;
+});
+
+app.delete('/api/DeleteTeacher:id', async (req, res) => {
+    let body = req.params;
+    let id = body.id;
+    if (isNaN(id) || id < 1 || !id)
+        return res.json('invalid Id')
+    let query = `DELETE FROM Teachers WHERE idTeacher = ${id}`;
+
+    let data = await paul(query, res);
+    res.json("Succesfully Deleted ") + data.rowsAffected;
+});
+
+app.delete('/api/DeleteSchool:id', async (req, res) => {
+    let body = req.params;
+    let id = body.id;
+    if (isNaN(id) || id < 1 || !id)
+        return res.json('invalid Id')
+    let query = `DELETE FROM Schools WHERE idSchools = ${id}`;
+
+    let data = await paul(query, res);
+    res.json("Succesfully Deleted ") + data.rowsAffected;
+});
+
+app.put('/api/UpdateManager:id', async (req, res) => {
+    let header = req.params;
+    let id = header.id;
+    let body = req.body;
+    if (isNaN(id) || id < 1 || !id)
+        return res.json('invalid Id');
+    let query = `UPDATE Management SET name ='${body.name}', address = '${body.address}', telephone ='${body.telephone}', email ='${body.email}', position = ${body.position}, password ='${body.password}' WHERE idManagement = ${id}`;    
+    let data = await paul(query, res);
+    res.json("Succesfully Updated ") + data.rowsAffected;
+});
+
+app.put('/api/UpdateGroup:id', async (req, res) => {
+    let header = req.params;
+    let id = header.id;
+    let body = req.body;
+    if (isNaN(id) || id < 1 || !id)
+        return res.json('invalid Id');
+    let query = `UPDATE Groups SET name ='${body.name}' WHERE idGroup = ${id}`;    
+    let data = await paul(query, res);
+    res.json("Succesfully Updated ") + data.rowsAffected;
+});
+
+app.put('/api/UpdateTeacher:id', async (req, res) => {
+    let header = req.params;
+    let id = header.id;
+    let body = req.body;
+    if (isNaN(id) || id < 1 || !id)
+        return res.json('invalid Id');
+    let query = `UPDATE Teachers SET '${body.name}','${body.address}','${body.telephone}',${body.groupId} WHERE idTeacher = ${id}`;    
+    let data = await paul(query, res);
+    res.json("Succesfully Updated ") + data.rowsAffected;
+});
+
+app.put('/api/UpdateSchool:id', async (req, res) => {
+    let header = req.params;
+    let id = header.id;
+    let body = req.body;
+    if (isNaN(id) || id < 1 || !id)
+        return res.json('invalid Id');
+    let query = `UPDATE Management SET name ='${body.name}', address = '${body.address}', telephone ='${body.telephone}', email ='${body.email}', position = ${body.position}, password ='${body.password}' WHERE idManagement = ${id}`;    
+    let data = await paul(query, res);
+    res.json("Succesfully Updated ") + data.rowsAffected;
+});
 //#endregion
 
 async function paul(req, res) {
