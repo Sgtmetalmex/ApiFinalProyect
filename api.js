@@ -162,7 +162,7 @@ app.put('/api/UpdateTeacher:id', async (req, res) => {
     let body = req.body;
     if (isNaN(id) || id < 1 || !id)
         return res.json('invalid Id');
-    let query = `UPDATE Teachers SET '${body.name}','${body.address}','${body.telephone}',${body.groupId} WHERE idTeacher = ${id}`;    
+    let query = `UPDATE Teachers SET name = '${body.name}', address = '${body.address}', telephone = '${body.telephone}', groupId = ${body.groupId} WHERE idTeacher = ${id}`;    
     let data = await paul(query, res);
     res.json("Succesfully Updated ") + data.rowsAffected;
 });
@@ -173,7 +173,7 @@ app.put('/api/UpdateSchool:id', async (req, res) => {
     let body = req.body;
     if (isNaN(id) || id < 1 || !id)
         return res.json('invalid Id');
-    let query = `UPDATE Management SET name ='${body.name}', address = '${body.address}', telephone ='${body.telephone}', email ='${body.email}', position = ${body.position}, password ='${body.password}' WHERE idManagement = ${id}`;    
+    let query = `UPDATE Schools SET name = '${body.name}', registerNumber = '${body.registerNumber}', address = '${body.address}', telephone = '${body.telephone}',schoolZone = ${body.zone}, director = '${body.director}' WHERE idSchool = ${id}`;    
     let data = await paul(query, res);
     res.json("Succesfully Updated ") + data.rowsAffected;
 });
