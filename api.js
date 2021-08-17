@@ -49,7 +49,7 @@ app.post('/api/ValidateUsers', async (req, res) => {
     let query = `SELECT * FROM management WHERE email = '${body.email}' and password = '${body.pass}'`;
     let data = await paul(query, res);
 
-    res.json({ "data": data[0] ? "Welcome" : "Incorrect Data" })
+    res.json(data[0]);
 });
 
 app.post('/api/AddManagement', async (req, res) => {
